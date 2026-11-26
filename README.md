@@ -23,3 +23,17 @@ Open http://localhost:5000 in a browser.
 ## Important
 
 This project is for educational purposes only and is not a medical diagnosis tool.
+
+## Deploy on Render
+
+1. Open https://dashboard.render.com and sign in.
+2. Select **New → Blueprint**.
+3. Connect the `madhuripeddinti/heart-disease-predictor` GitHub repository.
+4. Render will detect `render.yaml` and create the web service.
+5. Wait for the build and deployment to finish, then open the generated Render URL.
+
+Alternatively, select **New → Web Service**, connect the same repository, and use:
+
+- Build command: `pip install -r requirements.txt`
+- Start command: `gunicorn app:app`
+- Health check path: `/`
