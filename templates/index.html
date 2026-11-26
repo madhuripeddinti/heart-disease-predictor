@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heart Disease Predictor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <main class="page-shell">
+        <section class="predictor-card">
+            <header class="hero">
+                <div class="heart-icon" aria-hidden="true">♥</div>
+                <div>
+                    <p class="eyebrow">Clinical Risk Assessment</p>
+                    <h1>Heart Disease Predictor</h1>
+                    <p class="subtitle">Enter patient information to estimate heart disease risk.</p>
+                </div>
+            </header>
+
+            {% if errors %}
+            <div class="alert alert-error" role="alert">
+                <strong>Please check the following:</strong>
+                <ul>
+                    {% for error in errors %}<li>{{ error }}</li>{% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            <form action="{{ url_for('predict') }}" method="POST">
+                <div class="form-grid">
+                    <div class="field">
+                        <label for="age">Age</label>
+                        <input id="age" type="number" name="age" min="29" max="76" value="{{ form_values.get('age', '') }}" required>
+                        <span class="hint">29–76 years</span>
+                    </div>
+
+                    <div class="field">
+                        <label for="sex">Sex</label>
+                        <select id="sex" name="sex" required>
+                            <option value="">Select</option>
+                            <option value="1" {% if form_values.get('sex') == '1' %}selected{% endif %}>Male</option>
+                            <option value="0" {% if form_values.get('sex') == '0' %}selected{% endif %}>Female</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label for="trestbps">Resting Blood Pressure</label>
+                        <input id="trestbps" type="number" name="trestbps" min="90" max="200" value="{{ form_values.get('trestbps', '') }}" required>
+                        <span class="hint">mm Hg</span>
+                    </div>
+
+                    <div class="field">
+                        <label for="chol">Cholesterol</label>
+                        <input id="chol" type="number" name="chol" min="100" max="600" value="{{ form_values.get('chol', '') }}" required>
+                        <span class="hint">mg/dl</span>
+                    </div>
+
+                    <div class="field">
+                        <label for="fbs">Fasting Blood Sugar &gt; 120 mg/dl</label>
+                        <select id="fbs" name="fbs" required>
+                            <option value="">Select</option>
+                            <option value="1" {% if form_values.get('fbs') == '1' %}selected{% endif %}>Yes</option>
+                            <option value="0" {% if form_values.get('fbs') == '0' %}selected{% endif %}>No</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label for="restecg">Resting ECG</label>
+                        <select id="restecg" name="restecg" required>
+                            <option value="">Select</option>
+                            <option value="0" {% if form_values.get('restecg') == '0' %}selected{% endif %}>0 — Normal</option>
+                            <option value="1" {% if form_values.get('restecg') == '1' %}selected{% endif %}>1 — ST-T abnormality</option>
+                            <option value="2" {% if form_values.get('restecg') == '2' %}selected{% endif %}>2 — LV hypertrophy</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label for="thalach">Maximum Heart Rate</label>
+                        <input id="thalach" type="number" name="thalach" min="60" max="210" value="{{ form_values.get('thalach', '') }}" required>
+                        <span class="hint">beats per minute</span>
+                    </div>
+
+                    <div class="field">
+                        <label for="exang">Exercise-Induced Angina</label>
+                        <select id="exang" name="exang" required>
+                            <option value="">Select</option>
+                            <option value="1" {% if form_values.get('exang') == '1' %}selected{% endif %}>Yes</option>
+                            <option value="0" {% if form_values.get('exang') == '0' %}selected{% endif %}>No</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label for="ca">Major Vessels (0–3)</label>
+                        <select id="ca" name="ca" required>
+                            <option value="">Select</option>
+                            {% for value in range(4) %}
+                            <option value="{{ value }}" {% if form_values.get('ca') == value|string %}selected{% endif %}>{{ value }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label for="smoking">Smoking</label>
+                        <select id="smoking" name="smoking" required>
+                            <option value="">Select</option>
+                            <option value="1" {% if form_values.get('smoking') == '1' %}selected{% endif %}>Yes</option>
+                            <option value="0" {% if form_values.get('smoking') == '0' %}selected{% endif %}>No</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label for="diabetes">Diabetes</label>
+                        <select id="diabetes" name="diabetes" required>
+                            <option value="">Select</option>
+                            <option value="1" {% if form_values.get('diabetes') == '1' %}selected{% endif %}>Yes</option>
+                            <option value="0" {% if form_values.get('diabetes') == '0' %}selected{% endif %}>No</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button class="predict-button" type="submit">Analyze Heart Risk</button>
+            </form>
+
+            {% if prediction_text %}
+            <section class="result {{ result_class }}" aria-live="polite">
+                <div class="result-label">Prediction Result</div>
+                <h2>{{ prediction_text }}</h2>
+                {% if probability is not none %}
+                <p class="confidence">Model confidence: <strong>{{ "%.1f"|format(probability) }}%</strong></p>
+                {% endif %}
+                <p class="disclaimer">This educational model is not a medical diagnosis. Consult a qualified healthcare professional.</p>
+            </section>
+            {% endif %}
+        </section>
+    </main>
+</body>
+</html>
